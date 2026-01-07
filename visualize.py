@@ -207,9 +207,12 @@ class WaveformVisualizer:
             # Reload data (No constraints)
             self.get_chunk(start_time, width)
 
-            # Sync slider (silently hopefully)
+            # Sync slider silently
             if hasattr(self, 'slider'):
+                old_eventson = self.slider.eventson
+                self.slider.eventson = False
                 self.slider.set_val(start_time)
+                self.slider.eventson = old_eventson
         finally:
             self.navigating = False
 
@@ -249,7 +252,14 @@ class WaveformVisualizer:
                 # We need new xlim
                 new_xlim = self.ax.get_xlim()
                 self.get_chunk(new_xlim[0], new_xlim[1] - new_xlim[0])
-                self.slider.set_val(new_xlim[0])
+
+                # Sync slider silently
+                if hasattr(self, 'slider'):
+                    old_eventson = self.slider.eventson
+                    self.slider.eventson = False
+                    self.slider.set_val(new_xlim[0])
+                    self.slider.eventson = old_eventson
+
                 self.fig.canvas.draw_idle()
 
         finally:
